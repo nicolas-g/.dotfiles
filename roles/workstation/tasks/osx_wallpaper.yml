@@ -1,0 +1,48 @@
+---
+
+- block:
+  - name: Remove default wallpaper
+    file:
+      path: "{{ item }}"
+      state: "absent"
+    with_items:
+      - "/System/Library/CoreServices/DefaultDesktop.jpg"
+      - "/Library/Desktop\ Pictures/El\ Capitan.jpg"
+      - "/Library/Desktop\ Pictures/Sierra.jpg"
+      - "/Library/Desktop\ Pictures/Sierra\ 2.jpg"
+
+  - name: configs | Deploy {{ home_dir }}/.bashrc
+    copy:
+      src: img/wallpaper.jpg
+      dest: "{{ item }}"
+      mode: 0644
+      owner: "{{ user }}"
+      group: "{{ group }}"
+    with_items:
+      - "/System/Library/CoreServices/DefaultDesktop.jpg"
+      - "/Library/Desktop\ Pictures/Sierra.jpg"
+      - "/Library/Desktop\ Pictures/Sierra\ 2.jpg"
+      - "/Library/Desktop\ Pictures/El\ Capitan.jpg"
+
+
+  - name: packages | Config OSX: {{ item.description }}
+    command: defaults write {{ item.setting }}
+    #creates: "/usr/local/bin/brew"
+    with_items:
+      - description: "Disable the crash reporter"
+        setting: "com.apple.CrashReporter DialogType -string "none""
+      - description: "Check for software updates daily, not just once per week"
+        setting: "com.apple.SoftwareUpdate ScheduleFrequency -int 1"
+      - description: "Set AppleLanguages
+        setting: 'NSGlobalDomain AppleLanguages -array "en-IE" "el-IE"'
+      - description: "Set AppleLocale to en_IE"
+        setting: 'NSGlobalDomain AppleLocale -string "en_IE"'
+      - description: "Set AppleMeasurementUnits to Centimeters"
+        setting: 'NSGlobalDomain AppleMeasurementUnits -string "Centimeters"'
+      - description: "Set AppleMetricUnits to True"
+        setting: 'NSGlobalDomain AppleMetricUnits -bool true'
+      - description: "Save screenshots to the desktop"
+        setting: 'com.apple.screencapture location -string "${HOME}/Desktop"'
+      - description: "Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)"
+        setting: 'com.apple.screencapture type -string "png"'
+
